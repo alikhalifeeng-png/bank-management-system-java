@@ -38,7 +38,7 @@ The full schema is available in [`create_tables.sql`](./create_tables.sql).
 2. Update the database connection details in `Controller.java` (`connect()` method) to match your local setup.
 3. Open the project in NetBeans and run `LoginFrame.java`.
 
-## Screenshots
+
 
 *(Add a few screenshots here — Login screen, Worker console, Client portal, Advisor's client table with grayed-out inactive rows — before publishing.)*
 
