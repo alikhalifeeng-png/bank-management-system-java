@@ -25,12 +25,12 @@ public class LoginFrame extends javax.swing.JFrame {
     /**
      * Creates new form LoginFrame
      */
-   protected static String activeWorker;      // worker's username
+    protected static String activeWorker;      // worker's username
     protected static int activeWorkerId;        // worker's DB id — used as created_by
     protected static String activeWorkerName;   // worker's full name — used for display
     protected static Client activeClient;
     Controller controller;
-      // Hardcoded advisor credentials — no advisor table by design
+    // Hardcoded advisor credentials — no advisor table by design
     private static final String ADVISOR_USERNAME = "advisor";
     private static final String ADVISOR_PASSWORD = "admin123";
 
@@ -38,12 +38,12 @@ public class LoginFrame extends javax.swing.JFrame {
         initComponents();
         controller = new Controller();
 
-         setTitle("Bank Management System - Login");
+        setTitle("Bank Management System - Login");
         setSize(600, 600);
         setResizable(false);
         setLocationRelativeTo(null);
         setLayout(null);
- 
+
         JLabel bgLabel = new JLabel();
         bgLabel.setBounds(0, 0, 600, 600);
         bgLabel.setLayout(null);
@@ -55,34 +55,34 @@ public class LoginFrame extends javax.swing.JFrame {
             System.out.println("Background Image Error: Check path /View/bank_background_v3.png");
         }
         this.setContentPane(bgLabel);
- 
+
         GlassPanel glass = new GlassPanel();
         glass.setBounds(100, 120, 400, 340);
         glass.setLayout(null);
         bgLabel.add(glass);
- 
+
         JLabel titleLabel = new JLabel("SYSTEM LOGIN", SwingConstants.CENTER);
         titleLabel.setBounds(0, 20, 400, 30);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         glass.add(titleLabel);
- 
-        JTextField userField = new JTextField();
+
+        PlaceholderTextField userField = new PlaceholderTextField("Username");
         userField.setBounds(50, 70, 300, 40);
         userField.setBackground(new Color(255, 255, 255, 40));
         userField.setForeground(Color.WHITE);
         userField.setCaretColor(Color.WHITE);
         userField.setBorder(BorderFactory.createLineBorder(new Color(255, 255, 255, 100)));
         glass.add(userField);
- 
-        JPasswordField passField = new JPasswordField();
+
+        PlaceholderPasswordField passField = new PlaceholderPasswordField("Password");
         passField.setBounds(50, 130, 300, 40);
         passField.setBackground(new Color(255, 255, 255, 40));
         passField.setForeground(Color.WHITE);
         passField.setCaretColor(Color.WHITE);
         passField.setBorder(BorderFactory.createLineBorder(new Color(255, 255, 255, 100)));
         glass.add(passField);
- 
+
         JButton loginBtn = new JButton("LOGIN");
         loginBtn.setBounds(50, 200, 300, 45);
         loginBtn.setFocusPainted(false);
@@ -91,7 +91,7 @@ public class LoginFrame extends javax.swing.JFrame {
         loginBtn.setForeground(Color.WHITE);
         loginBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         glass.add(loginBtn);
- 
+
         /*JButton newClientBtn = new JButton("New Client? Register");
         newClientBtn.setBounds(50, 255, 300, 35);
         newClientBtn.setFocusPainted(false);
@@ -100,44 +100,43 @@ public class LoginFrame extends javax.swing.JFrame {
         newClientBtn.setForeground(Color.WHITE);
         newClientBtn.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         glass.add(newClientBtn);*/
- 
         JLabel timeLabel = new JLabel("", SwingConstants.RIGHT);
         JLabel dateLabel = new JLabel("", SwingConstants.RIGHT);
- 
+
         timeLabel.setBounds(380, 500, 200, 40);
         timeLabel.setForeground(Color.WHITE);
         timeLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
- 
+
         dateLabel.setBounds(380, 535, 200, 20);
         dateLabel.setForeground(new Color(220, 220, 220));
         dateLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
- 
+
         bgLabel.add(timeLabel);
         bgLabel.add(dateLabel);
- 
+
         Timer timer = new Timer(1000, e -> {
             timeLabel.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
             dateLabel.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy")));
         });
         timer.start();
- 
+
         loginBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = userField.getText().trim();
                 String password = new String(passField.getPassword());
- 
+
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(LoginFrame.this,
                             "Please enter both username and password.",
                             "Login Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
- 
+
                 performLogin(username, password);
             }
         });
- 
+
         /*newClientBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -145,11 +144,20 @@ public class LoginFrame extends javax.swing.JFrame {
                 LoginFrame.this.dispose();
             }
         });*/
- 
         this.revalidate();
         this.repaint();
+
+        this.revalidate();
+        this.repaint();
+
+        // Prevent Swing's default auto-focus on the first text field,
+        // so its placeholder text renders correctly on initial load.
+        SwingUtilities.invokeLater(() -> {
+            this.requestFocusInWindow();
+        });
+
     }
-    
+
     private void performLogin(String username, String password) {
         // 1. Check Advisor first (hardcoded, no DB table)
         if (username.equals(ADVISOR_USERNAME) && password.equals(ADVISOR_PASSWORD)) {
@@ -158,7 +166,7 @@ public class LoginFrame extends javax.swing.JFrame {
             this.dispose();
             return;
         }
- 
+
         // 2. Check Worker
         try {
             Worker worker = controller.loginWorker(username, password);
@@ -176,7 +184,7 @@ public class LoginFrame extends javax.swing.JFrame {
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
- 
+
         // 3. Check Client
         try {
             Client client = controller.loginClient(username, password);
@@ -192,13 +200,57 @@ public class LoginFrame extends javax.swing.JFrame {
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
- 
+
         // 4. Nothing matched — could be wrong credentials OR a deactivated client
         JOptionPane.showMessageDialog(this,
                 "Invalid username or password.",
                 "Login Error", JOptionPane.ERROR_MESSAGE);
     }
- 
+
+    private static class PlaceholderTextField extends JTextField {
+
+        private final String placeholder;
+
+        public PlaceholderTextField(String placeholder) {
+            this.placeholder = placeholder;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (getText().isEmpty() && !isFocusOwner()) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(150, 160, 175));
+                g2.setFont(getFont().deriveFont(Font.ITALIC));
+                g2.drawString(placeholder, getInsets().left + 4, getHeight() / 2 + getFont().getSize() / 2 - 2);
+                g2.dispose();
+            }
+        }
+    }
+
+    private static class PlaceholderPasswordField extends JPasswordField {
+
+        private final String placeholder;
+
+        public PlaceholderPasswordField(String placeholder) {
+            this.placeholder = placeholder;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (getPassword().length == 0 && !isFocusOwner()) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(150, 160, 175));
+                g2.setFont(getFont().deriveFont(Font.ITALIC));
+                g2.drawString(placeholder, getInsets().left + 4, getHeight() / 2 + getFont().getSize() / 2 - 2);
+                g2.dispose();
+            }
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -206,8 +258,7 @@ public class LoginFrame extends javax.swing.JFrame {
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
-                      
- 
+
     /**
      * @param args the command line arguments
      */
@@ -228,7 +279,7 @@ public class LoginFrame extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
- 
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new LoginFrame().setVisible(true);
@@ -264,7 +315,6 @@ public class LoginFrame extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-     
 }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

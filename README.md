@@ -38,10 +38,6 @@ The full schema is available in [`create_tables.sql`](./create_tables.sql).
 2. Update the database connection details in `Controller.java` (`connect()` method) to match your local setup.
 3. Open the project in NetBeans and run `LoginFrame.java`.
 
-## Screenshots
-
-*(Add a few screenshots here — Login screen, Worker console, Client portal, Advisor's client table with grayed-out inactive rows — before publishing.)*
-
 ## Status
 
 Core features complete: authentication for all three roles, client registration, deposit/withdraw/transfer with transaction history, and client activation/deactivation with visual status indicators. Actively refined as a learning project — feedback and suggestions welcome.
